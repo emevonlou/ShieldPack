@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShieldPack</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <h1>ShieldPack</h1>
+      <p class="subtitle">
+        Verifique se uma senha já apareceu em vazamentos conhecidos, com foco em privacidade.
+      </p>
+
+      <label for="password">Digite uma senha para teste</label>
+      <input
+        id="password"
+        type="password"
+        placeholder="Digite a senha"
+        maxlength="256"
+      />
+
+      <button id="checkBtn">Verificar senha</button>
+
+      <div id="result" class="result hidden"></div>
+
+      <p class="note">
+        A senha não é enviada em texto puro ao serviço consultado; a verificação usa hash parcial.
+      </p>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
