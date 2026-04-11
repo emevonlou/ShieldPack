@@ -1,60 +1,99 @@
-const button = document.getElementById("checkBtn");
+const passwordBtn = document.getElementById("checkPasswordBtn");
+const emailBtn = document.getElementById("checkEmailBtn");
+
 const passwordInput = document.getElementById("password");
+const emailInput = document.getElementById("email");
+
 const resultBox = document.getElementById("result");
 
-button.addEventListener("click", async () => {
+// 🔐 SENHA
+passwordBtn.addEventListener("click", async () => {
   const password = passwordInput.value;
 
-  resultBox.className = "result hidden";
-  resultBox.textContent = "";
-
   if (!password.trim()) {
-    resultBox.className = "result pwned";
-    resultBox.textContent = "Digite uma senha para verificar.";
+    showError("Digite uma senha.");
     return;
   }
 
-  button.disabled = true;
-  button.textContent = "Verificando...";
+  setLoading(passwordBtn);
 
   try {
-    const response = await fetch("/api/check-password", {
+    const res = await fetch("/api/check-password", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password })
     });
 
-    const data = await response.json();
-
-    resultBox.classList.remove("hidden");
-
-    if (!response.ok) {
-      resultBox.className = "result pwned";
-      resultBox.textContent = data.detail || "Erro ao verificar a senha.";
-      return;
-    }
+    const data = await res.json();
 
     if (data.pwned) {
-      resultBox.className = "result pwned";
-      resultBox.innerHTML = `
-        <strong>Senha comprometida</strong><br>
-        ${data.message}<br>
-        <strong>Ocorrências:</strong> ${data.count}
-      `;
+      showError(`⚠️ Senha comprometida (${data.count} vezes)`);
     } else {
-      resultBox.className = "result safe";
-      resultBox.innerHTML = `
-        <strong>Nenhum vazamento encontrado</strong><br>
-        ${data.message}
-      `;
+      showSuccess("✅ Senha segura (não encontrada)");
     }
-  } catch (error) {
-    resultBox.className = "result pwned";
-    resultBox.textContent = "Falha de conexão com a API.";
-  } finally {
-    button.disabled = false;
-    button.textContent = "Verificar senha";
+
+  } catch {
+    showError("Erro ao verificar senha.");
   }
+
+  resetButton(passwordBtn, "Verificar senha");
 });
+
+// ✉️ EMAIL
+emailBtn.addEventListener("click", async () => {
+  const email = emailInput.value;
+
+  if (!email.trim()) {
+    showError("Digite um e-mail.");
+    return;
+  }
+
+  setLoading(emailBtn);
+
+  try {
+    const res = await fetch("/api/check-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await res.json();
+
+    if (data.found) {
+      showError(`
+         Encontrado em ${data.breaches.length} vazamento(s)<br>
+        ${data.breaches.join(", ")}
+      `);
+    } else {
+      showSuccess(data.message);
+    }
+
+  } catch {
+    showError("Erro ao verificar e-mail.");
+  }
+
+  resetButton(emailBtn, "Verificar e-mail");
+});
+
+// UI helpers
+function showError(msg) {
+  resultBox.className = "result pwned";
+  resultBox.innerHTML = msg;
+  resultBox.classList.remove("hidden");
+}
+
+function showSuccess(msg) {
+  resultBox.className = "result safe";
+  resultBox.innerHTML = msg;
+  resultBox.classList.remove("hidden");
+}
+
+function setLoading(btn) {
+  btn.disabled = true;
+  btn.textContent = "Verificando...";
+}
+
+function resetButton(btn, text) {
+  btn.disabled = false;
+  btn.textContent = text;
+}

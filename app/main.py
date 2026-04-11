@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse
 from app.config import settings
 from app.routes.passwords import router as passwords_router
 from app.routes.health import router as health_router
+from app.routes.email import router as email_router
 
 app = FastAPI(
     title=settings.app_name,
@@ -23,6 +24,7 @@ app.add_middleware(
 
 app.include_router(passwords_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
+app.include_router(email_router, prefix="/api")
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 

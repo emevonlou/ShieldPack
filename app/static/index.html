@@ -11,23 +11,23 @@
     <section class="card">
       <h1>ShieldPack</h1>
       <p class="subtitle">
-        Verifique se uma senha já apareceu em vazamentos conhecidos, com foco em privacidade.
+        Verifique senhas e e-mails expostos em vazamentos, com foco em privacidade.
       </p>
 
-      <label for="password">Digite uma senha para teste</label>
-      <input
-        id="password"
-        type="password"
-        placeholder="Digite a senha"
-        maxlength="256"
-      />
+      <!-- 🔐 SENHA -->
+      <h2>Verificar senha</h2>
+      <input id="password" type="password" placeholder="Digite a senha" />
+      <button id="checkPasswordBtn">Verificar senha</button>
 
-      <button id="checkBtn">Verificar senha</button>
+      <!-- ✉️ EMAIL -->
+      <h2>Verificar e-mail</h2>
+      <input id="email" type="email" placeholder="Digite seu e-mail" />
+      <button id="checkEmailBtn">Verificar e-mail</button>
 
       <div id="result" class="result hidden"></div>
 
       <p class="note">
-        A senha não é enviada em texto puro ao serviço consultado; a verificação usa hash parcial.
+        Suas informações são tratadas com foco em privacidade.
       </p>
     </section>
   </main>
