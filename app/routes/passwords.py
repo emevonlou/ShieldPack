@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 import httpx
 
 from app.security import sha1_hash, split_hash_prefix_suffix
+from app.config import settings
 
 router = APIRouter(tags=["Passwords"])
 
@@ -25,7 +26,7 @@ async def check_password(data: PasswordCheckRequest):
 
         url = f"https://api.pwnedpasswords.com/range/{prefix}"
 
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=settings.request_timeout) as client:
             response = await client.get(url, headers={"Add-Padding": "true"})
 
         if response.status_code != 200:
