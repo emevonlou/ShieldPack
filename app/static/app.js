@@ -6,7 +6,6 @@ const emailInput = document.getElementById("email");
 
 const resultBox = document.getElementById("result");
 
-// 🔐 SENHA
 passwordBtn.addEventListener("click", async () => {
   const password = passwordInput.value;
 
@@ -26,12 +25,12 @@ passwordBtn.addEventListener("click", async () => {
 
     const data = await res.json();
 
-    if (data.pwned) {
-      showError(`⚠️ Senha comprometida (${data.count} vezes)`);
-    } else {
-      showSuccess("✅ Senha segura (não encontrada)");
+    if (!res.ok) {
+      showError(data.detail || "Erro ao verificar senha.");
+      return;
     }
 
+    showPasswordResult(data);
   } catch {
     showError("Erro ao verificar senha.");
   }
@@ -39,7 +38,6 @@ passwordBtn.addEventListener("click", async () => {
   resetButton(passwordBtn, "Verificar senha");
 });
 
-// ✉️ EMAIL
 emailBtn.addEventListener("click", async () => {
   const email = emailInput.value;
 
@@ -59,15 +57,20 @@ emailBtn.addEventListener("click", async () => {
 
     const data = await res.json();
 
+    if (!res.ok) {
+      showError(data.detail || "Erro ao verificar e-mail.");
+      return;
+    }
+
     if (data.found) {
       showError(`
-         Encontrado em ${data.breaches.length} vazamento(s)<br>
+        <strong>⚠️ E-mail exposto</strong><br>
+        Encontrado em ${data.breaches.length} vazamento(s).<br>
         ${data.breaches.join(", ")}
       `);
     } else {
-      showSuccess(data.message);
+      showSuccess(`<strong>ℹ️ E-mail</strong><br>${data.message}`);
     }
-
   } catch {
     showError("Erro ao verificar e-mail.");
   }
@@ -75,7 +78,33 @@ emailBtn.addEventListener("click", async () => {
   resetButton(emailBtn, "Verificar e-mail");
 });
 
-// UI helpers
+function showPasswordResult(data) {
+  const badge = getRiskBadge(data.risk_level);
+
+  const html = `
+    <strong>${badge.title}</strong><br>
+    ${data.message}<br><br>
+    <strong>Nível de risco:</strong> ${badge.label}<br>
+    <strong>Recomendação:</strong> ${data.recommendation}
+  `;
+
+  if (data.risk_level === "low") {
+    showSuccess(html);
+  } else {
+    showError(html);
+  }
+}
+
+function getRiskBadge(level) {
+  if (level === "high") {
+    return { title: "🔴 Alto risco", label: "Alto" };
+  }
+  if (level === "medium") {
+    return { title: "🟠 Médio risco", label: "Médio" };
+  }
+  return { title: "🟢 Baixo risco", label: "Baixo" };
+}
+
 function showError(msg) {
   resultBox.className = "result pwned";
   resultBox.innerHTML = msg;

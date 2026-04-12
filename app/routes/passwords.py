@@ -16,6 +16,25 @@ class PasswordCheckResponse(BaseModel):
     pwned: bool
     count: int
     message: str
+    risk_level: str
+    recommendation: str
+
+
+def calculate_risk(count: int) -> tuple[str, str]:
+    if count == 0:
+        return (
+            "low",
+            "Boa notícia: esta senha não foi encontrada na base consultada. Ainda assim, use senhas longas e exclusivas."
+        )
+    if count < 1000:
+        return (
+            "medium",
+            "Esta senha já apareceu em vazamentos. Troque-a e não a reutilize em outras contas."
+        )
+    return (
+        "high",
+        "Risco alto: esta senha é amplamente conhecida em vazamentos. Troque imediatamente e ative autenticação em dois fatores."
+    )
 
 
 @router.post("/check-password", response_model=PasswordCheckResponse)
@@ -46,16 +65,22 @@ async def check_password(data: PasswordCheckRequest):
 
             if returned_suffix.upper() == suffix:
                 total = int(count)
+                risk_level, recommendation = calculate_risk(total)
                 return PasswordCheckResponse(
                     pwned=True,
                     count=total,
-                    message=f"Esta senha já apareceu {total} vez(es) em vazamentos e não deve ser usada."
+                    message=f"Esta senha já apareceu {total} vez(es) em vazamentos e não deve ser usada.",
+                    risk_level=risk_level,
+                    recommendation=recommendation,
                 )
 
+        risk_level, recommendation = calculate_risk(0)
         return PasswordCheckResponse(
             pwned=False,
             count=0,
-            message="Nenhum vazamento encontrado para esta senha na base consultada."
+            message="Nenhum vazamento encontrado para esta senha na base consultada.",
+            risk_level=risk_level,
+            recommendation=recommendation,
         )
 
     except HTTPException:
