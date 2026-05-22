@@ -268,3 +268,29 @@ button:disabled {
   background: rgba(2, 6, 23, 0.35);
   border: 1px solid rgba(148, 163, 184, 0.16);
 }
+.breach-list {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0;
+}
+
+.breach-list li {
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  background: rgba(2, 6, 23, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.breach-list span,
+.breach-list small {
+  display: block;
+  margin-top: 4px;
+  color: var(--soft);
+}
+
+.demo-notice {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}

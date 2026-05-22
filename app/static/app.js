@@ -33,9 +33,9 @@ passwordBtn.addEventListener("click", async () => {
     showPasswordResult(data);
   } catch {
     showError("Erro ao verificar senha.");
+  } finally {
+    resetButton(passwordBtn, "Verificar senha");
   }
-
-  resetButton(passwordBtn, "Verificar senha");
 });
 
 emailBtn.addEventListener("click", async () => {
@@ -62,20 +62,12 @@ emailBtn.addEventListener("click", async () => {
       return;
     }
 
-    if (data.found) {
-      showError(`
-        <strong>⚠️ E-mail exposto</strong><br>
-        Encontrado em ${data.breaches.length} vazamento(s).<br>
-        ${data.breaches.join(", ")}
-      `);
-    } else {
-      showSuccess(`<strong>ℹ️ E-mail</strong><br>${data.message}`);
-    }
+    showEmailResult(data);
   } catch {
     showError("Erro ao verificar e-mail.");
+  } finally {
+    resetButton(emailBtn, "Verificar e-mail");
   }
-
-  resetButton(emailBtn, "Verificar e-mail");
 });
 
 function showPasswordResult(data) {
@@ -109,27 +101,78 @@ function showPasswordResult(data) {
   }
 }
 
+function showEmailResult(data) {
+  const badge = getRiskBadge(data.risk_level);
+
+  const breachesHtml = data.breaches.length
+    ? `
+      <ul class="breach-list">
+        ${data.breaches.map((breach) => `
+          <li>
+            <strong>${breach.name}</strong>
+            <span>${breach.domain}</span>
+            <small>Dados expostos: ${breach.exposed_data.join(", ")}</small>
+          </li>
+        `).join("")}
+      </ul>
+    `
+    : "";
+
+  const demoNotice = data.demo_mode
+    ? `<p class="demo-notice">Modo demo ativo: resultado baseado em dados demonstrativos locais.</p>`
+    : "";
+
+  const html = `
+    <div class="risk-header">
+      <span class="risk-icon">${badge.icon}</span>
+      <div>
+        <strong>${badge.title}</strong>
+        <p>${data.message}</p>
+      </div>
+    </div>
+
+    <div class="risk-meter">
+      <div class="risk-meter-fill ${data.risk_level}"></div>
+    </div>
+
+    ${breachesHtml}
+
+    <div class="recommendation">
+      <strong>Recomendação:</strong><br>
+      ${data.recommendation}
+    </div>
+
+    ${demoNotice}
+  `;
+
+  if (data.risk_level === "low") {
+    showSuccess(html);
+  } else {
+    showError(html);
+  }
+}
+
 function getRiskBadge(level) {
   if (level === "high") {
     return {
-      icon: "🔴",
+      icon: "●",
       title: "Alto risco",
-      subtitle: "Esta senha deve ser trocada imediatamente."
+      subtitle: "Esta credencial deve ser revisada imediatamente."
     };
   }
 
   if (level === "medium") {
     return {
-      icon: "🟠",
+      icon: "●",
       title: "Médio risco",
-      subtitle: "Esta senha já apareceu em vazamentos."
+      subtitle: "Existe exposição relevante que merece atenção."
     };
   }
 
   return {
-    icon: "🟢",
+    icon: "●",
     title: "Baixo risco",
-    subtitle: "Nenhum vazamento encontrado na base consultada."
+    subtitle: "Nenhuma exposição encontrada na fonte consultada."
   };
 }
 

@@ -3,10 +3,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "ShieldPack"
-    app_version: str = "0.2.0"
+    app_version: str = "0.3.0"
     debug: bool = True
     hibp_api_key: str = ""
-    enable_email_check: bool = False
+    enable_email_check: bool = True
+    enable_email_demo_mode: bool = True
     request_timeout: int = 15
 
     model_config = SettingsConfigDict(
