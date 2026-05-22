@@ -82,10 +82,24 @@ function showPasswordResult(data) {
   const badge = getRiskBadge(data.risk_level);
 
   const html = `
-    <strong>${badge.title}</strong><br>
-    ${data.message}<br><br>
-    <strong>Nível de risco:</strong> ${badge.label}<br>
-    <strong>Recomendação:</strong> ${data.recommendation}
+    <div class="risk-header">
+      <span class="risk-icon">${badge.icon}</span>
+      <div>
+        <strong>${badge.title}</strong>
+        <p>${badge.subtitle}</p>
+      </div>
+    </div>
+
+    <div class="risk-meter">
+      <div class="risk-meter-fill ${data.risk_level}"></div>
+    </div>
+
+    <p>${data.message}</p>
+
+    <div class="recommendation">
+      <strong>Recomendação:</strong><br>
+      ${data.recommendation}
+    </div>
   `;
 
   if (data.risk_level === "low") {
@@ -97,12 +111,26 @@ function showPasswordResult(data) {
 
 function getRiskBadge(level) {
   if (level === "high") {
-    return { title: "🔴 Alto risco", label: "Alto" };
+    return {
+      icon: "🔴",
+      title: "Alto risco",
+      subtitle: "Esta senha deve ser trocada imediatamente."
+    };
   }
+
   if (level === "medium") {
-    return { title: "🟠 Médio risco", label: "Médio" };
+    return {
+      icon: "🟠",
+      title: "Médio risco",
+      subtitle: "Esta senha já apareceu em vazamentos."
+    };
   }
-  return { title: "🟢 Baixo risco", label: "Baixo" };
+
+  return {
+    icon: "🟢",
+    title: "Baixo risco",
+    subtitle: "Nenhum vazamento encontrado na base consultada."
+  };
 }
 
 function showError(msg) {
