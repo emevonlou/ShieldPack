@@ -27,7 +27,20 @@ ShieldPack was built to transform exposure checks into understandable decisions.
 
 ## Screenshots
 
+<<<<<<< HEAD
 Coming soon.
+=======
+### Home
+
+![Home](screenshots/home.png)
+
+### Password Risk
+
+![Password Risk](screenshots/password-risk.png)
+
+### Email Demo
+
+![Email Demo](screenshots/email-demo.png)
 
 ---
 
