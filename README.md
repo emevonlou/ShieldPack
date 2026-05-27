@@ -26,9 +26,6 @@ ShieldPack was built to transform exposure checks into understandable decisions.
 ---
 
 ## Screenshots
-
-<<<<<<< HEAD
-Coming soon.
 =======
 ### Home
 
